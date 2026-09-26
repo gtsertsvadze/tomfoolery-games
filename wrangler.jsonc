@@ -7,11 +7,15 @@
     "directory": "./public",
     "not_found_handling": "none"
   },
+  "routes": [
+    { "pattern": "tomfoolery.games/*", "zone_name": "tomfoolery.games" },
+    { "pattern": "www.tomfoolery.games/*", "zone_name": "tomfoolery.games" }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "tomfoolery",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "4ff57984-9227-4b74-a82a-8f03e12aecaa",
       "migrations_dir": "migrations"
     }
   ]
