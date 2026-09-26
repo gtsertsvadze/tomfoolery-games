@@ -30,8 +30,10 @@ npx wrangler domains add www.tomfoolery.games
 Then replace `PASTE_YOUR_TOKEN_HERE` in `public/index.html` and
 `public/fruit/index.html` with your Cloudflare Web Analytics token.
 
-## Regenerate the OG image
+## Regenerate images (OG card, favicon.ico, apple-touch-icon)
 
-```powershell
-powershell -File tools/generate-og.ps1
+Needs Chrome installed. `public/favicon.svg` is the hand-drawn icon source.
+
+```bash
+node tools/images.mjs
 ```
