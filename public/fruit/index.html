@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Name a Fruit — tomfoolery.games</title>
+<meta name="description" content="Name a fruit. Any fruit except apple. How rare is your answer?">
+<meta property="og:title" content="Name a Fruit — tomfoolery.games">
+<meta property="og:description" content="Name a fruit. Any fruit except apple. How rare is your answer?">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tomfoolery.games/fruit/">
+<meta property="og:image" content="https://tomfoolery.games/og/fruit.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: #000;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 48px 20px 16px; text-align: center; }
+  .home { display: inline-block; margin-bottom: 24px; color: #000; font-size: 14px; }
+  h1 { font-size: 30px; margin: 0 0 4px; }
+  p.rule { font-size: 17px; margin: 0 0 24px; }
+  form { display: flex; gap: 8px; margin-bottom: 8px; }
+  input { flex: 1; min-width: 0; font: inherit; font-size: 18px; padding: 10px 12px;
+    border: 2px solid #000; border-radius: 8px; }
+  button { font: inherit; font-size: 16px; font-weight: 600; padding: 10px 16px;
+    background: #000; color: #fff; border: 2px solid #000; border-radius: 8px;
+    cursor: pointer; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  button.ghost { background: #fff; color: #000; }
+  #error { color: #b00020; min-height: 24px; margin: 4px 0 0; }
+  #result { display: none; border: 2px solid #000; border-radius: 12px;
+    padding: 20px 16px; margin-top: 16px; }
+  #result .fruit { font-size: 40px; font-weight: 700; margin: 0 0 4px; }
+  #result .verdict { font-size: 17px; margin: 0 0 8px; }
+  #result .stat { font-size: 15px; margin: 0 0 12px; }
+  #top { margin-top: 24px; text-align: left; }
+  #top h2 { font-size: 16px; margin: 0 0 8px; text-align: center; }
+  #top ol { margin: 0 auto; padding-left: 24px; display: table; font-size: 16px; }
+  #top li { padding: 2px 0; }
+  #total { font-size: 13px; margin-top: 12px; }
+  .argue { font-size: 13px; margin: 20px 0 0; }
+  footer { text-align: center; font-size: 13px; padding: 16px 0 32px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="home" href="/">← tomfoolery.games</a>
+  <h1>Name a fruit.</h1>
+  <p class="rule">Any fruit except apple.</p>
+  <form id="form" autocomplete="off">
+    <input id="input" type="text" maxlength="40" placeholder="e.g. medlar"
+      aria-label="Name a fruit" autofocus>
+    <button type="submit" id="go">Go</button>
+  </form>
+  <p id="error"></p>
+  <div id="result">
+    <p class="fruit" id="r-fruit"></p>
+    <p class="verdict" id="r-verdict"></p>
+    <p class="stat" id="r-stat"></p>
+    <button class="ghost" id="share" type="button">Share</button>
+  </div>
+  <div id="top" hidden>
+    <h2>Today's top 5</h2>
+    <ol id="top-list"></ol>
+    <p id="total"></p>
+  </div>
+  <p class="argue">Arguing with the rules? Botanical fruits count. Yes, tomato is a fruit. Apple is still banned.</p>
+</main>
+<footer>© 2026 tomfoolery.games</footer>
+<script>
+const form = document.getElementById('form');
+const input = document.getElementById('input');
+const errorEl = document.getElementById('error');
+const resultEl = document.getElementById('result');
+const rFruit = document.getElementById('r-fruit');
+const rVerdict = document.getElementById('r-verdict');
+const rStat = document.getElementById('r-stat');
+const shareBtn = document.getElementById('share');
+const topEl = document.getElementById('top');
+const topList = document.getElementById('top-list');
+const totalEl = document.getElementById('total');
+const goBtn = document.getElementById('go');
+
+const MOCKING = [
+  '{F}. Groundbreaking. The fruit equivalent of answering "blue".',
+  '{F}. Wow. Did you also name your dog "Dog"?',
+  '{F}. A bold choice, if this were 1994.',
+  '{F} again. The hive mind thanks you for your service.'
+];
+const MID = [
+  '{F}. Not bad. Not medlar, but not bad.',
+  '{F}. Respectable. Deeply mid. Respectable.'
+];
+const BRAG = [
+  '{F}?? Okay, show-off. Framed and mounted.',
+  '{F}. Absolutely nobody else would have said that. Respect.',
+  '{F}. The connoisseur\u2019s choice. Or a misclick. Either way: legend.'
+];
+
+function pick(arr, seed) {
+  let h = 0;
+  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return arr[h % arr.length];
+}
+
+function people(n) { return n === 1 ? '1 person' : n + ' people'; }
+
+let lastShare = '';
+
+function renderTop(top, total) {
+  if (!top.length) { topEl.hidden = true; return; }
+  topEl.hidden = false;
+  topList.innerHTML = '';
+  for (const t of top) {
+    const li = document.createElement('li');
+    li.textContent = t.fruit + ' — ' + t.count;
+    topList.appendChild(li);
+  }
+  totalEl.textContent = people(total) + ' answered so far.';
+}
+
+async function loadTop() {
+  try {
+    const r = await fetch('/api/fruit/top');
+    if (!r.ok) return;
+    const d = await r.json();
+    renderTop(d.top || [], d.total || 0);
+  } catch { /* offline: stay quiet */ }
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errorEl.textContent = '';
+  const answer = input.value.trim();
+  if (!answer) return;
+  goBtn.disabled = true;
+  try {
+    const r = await fetch('/api/fruit/answer', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ answer })
+    });
+    const d = await r.json();
+    if (!d.ok) {
+      errorEl.textContent = d.error || 'Hmm. Try again.';
+      return;
+    }
+    const F = d.fruit[0].toUpperCase() + d.fruit.slice(1);
+    rFruit.textContent = F;
+    const pool = d.rarerThan >= 90 ? BRAG : d.rarerThan >= 50 ? MID : MOCKING;
+    rVerdict.textContent = pick(pool, d.fruit + d.count).replaceAll('{F}', F);
+    if (d.total < 300) {
+      rStat.textContent = people(d.count) + ' said ' + d.fruit + '.';
+      lastShare = 'Name a Fruit: I said ' + d.fruit + '. ' +
+        (d.count === 1 ? 'Nobody else did.' : people(d.count) + ' said it.') +
+        ' tomfoolery.games/fruit';
+    } else {
+      rStat.textContent = 'Rarer than ' + d.rarerThan + '% of players.';
+      lastShare = 'Name a Fruit: I said ' + d.fruit + '. Rarer than ' +
+        d.rarerThan + '% of players. tomfoolery.games/fruit';
+    }
+    resultEl.style.display = 'block';
+    renderTop(d.top || [], d.total || 0);
+  } catch {
+    errorEl.textContent = 'Network hiccup. Try again.';
+  } finally {
+    goBtn.disabled = false;
+  }
+});
+
+shareBtn.addEventListener('click', async () => {
+  if (navigator.share) {
+    try { await navigator.share({ text: lastShare }); return; }
+    catch { return; }
+  }
+  try {
+    await navigator.clipboard.writeText(lastShare);
+    shareBtn.textContent = 'Copied!';
+    setTimeout(() => { shareBtn.textContent = 'Share'; }, 1500);
+  } catch {
+    prompt('Copy your result:', lastShare);
+  }
+});
+
+loadTop();
+</script>
+<!-- Cloudflare Web Analytics: replace PASTE_YOUR_TOKEN_HERE with your token -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "PASTE_YOUR_TOKEN_HERE"}'></script>
+</body>
+</html>

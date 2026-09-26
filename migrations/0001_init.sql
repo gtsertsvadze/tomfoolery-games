@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS fruit_counts (
+  fruit TEXT PRIMARY KEY,
+  count INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS fruit_daily (
+  fruit TEXT NOT NULL,
+  day TEXT NOT NULL,
+  count INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (fruit, day)
+);
