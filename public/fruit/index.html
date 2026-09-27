@@ -179,7 +179,7 @@ form.addEventListener('submit', async (e) => {
     });
     const d = await r.json();
     if (!d.ok) {
-      if (d.code !== 'apple') hint.textContent = d.error || 'Try again.';
+      hint.textContent = d.error || 'Try again.';
       input.select();
       return;
     }
