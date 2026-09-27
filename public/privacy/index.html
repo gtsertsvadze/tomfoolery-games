@@ -3,11 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>tomfoolery</title>
-<meta name="description" content="Tiny web games. Name a fruit. Any fruit except apple.">
+<title>Privacy - tomfoolery</title>
+<meta name="description" content="How tomfoolery.games handles your data. Short version: it barely does.">
 <meta name="theme-color" content="#FBF6EC">
-<meta property="og:title" content="tomfoolery">
-<meta property="og:description" content="Tiny web games. Name a fruit. Any fruit except apple.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
@@ -23,37 +21,43 @@
   header { padding: 28px 40px; }
   .wm { font-size: 20px; font-weight: 600; letter-spacing: -.03em; color: inherit; text-decoration: none; }
   .wm b { display: inline-block; font-weight: inherit; color: #E4572E; transform: rotate(-14deg) translateY(-1px); }
-  main { padding: 16px 40px 32px; }
-  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px;
-    grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .tile { display: flex; flex-direction: column; justify-content: space-between; height: 236px;
-    padding: 20px 22px; border-radius: 8px; background: var(--tint); color: inherit; text-decoration: none;
-    transition: transform .15s ease; }
-  .tile:hover { transform: translateY(-2px); }
-  .tile img { display: block; width: 150px; height: 150px; margin: -8px auto 0; }
-  .tile span { font-size: 18px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; white-space: nowrap; }
+  main { max-width: 640px; margin: 0 auto; width: 100%; padding: 48px 40px 40px; }
+  h1 { font-size: 56px; font-weight: 600; letter-spacing: -.035em; line-height: 1.02; margin: 0 0 12px; }
+  h1 b { font-weight: inherit; color: #E4572E; }
+  .updated { font-size: 13px; color: #8A7B6E; margin: 0 0 32px; }
+  p { font-size: 17px; line-height: 1.6; margin: 0 0 16px; }
+  h2 { font-size: 18px; font-weight: 600; letter-spacing: -.01em; margin: 32px 0 8px; }
+  main a { color: inherit; text-decoration: underline; text-decoration-color: #E4572E; text-underline-offset: 3px; }
   footer { margin-top: auto; padding: 24px; text-align: center; font-size: 12px; color: #8A7B6E; }
   footer a { color: inherit; text-decoration: none; }
   footer a:hover { color: #2A211A; text-decoration: underline; text-underline-offset: 3px; }
-  @media (max-width: 1023px) { ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @media (max-width: 639px) {
     body { padding: 0 20px; }
     header { padding: 24px 0; }
     main { padding: 32px 0; }
-    ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-    .tile { height: auto; aspect-ratio: 1; padding: 0; justify-content: center; align-items: center; gap: 12px; }
-    .tile img { width: 68px; height: 68px; margin: 0; }
-    .tile span { font-size: 13px; font-weight: 500; letter-spacing: 0; }
+    h1 { font-size: 40px; }
+    p { font-size: 16px; }
   }
-  @media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
 </style>
 </head>
 <body>
 <header><a class="wm" href="/">tomf<b>o</b>olery</a></header>
 <main>
-  <ul>
-    <li><a class="tile" href="/fruit/" style="--tint:#FFE9A8"><img src="/icons/name-a-fruit.svg" alt="" width="150" height="150"><span>Name a Fruit</span></a></li>
-  </ul>
+  <h1>Privacy<b>.</b></h1>
+  <p class="updated">Last updated 27 September 2026</p>
+  <p>tomfoolery.games is a handful of tiny games. There are no accounts, no ads and no cookies, and nothing about you is sold or shared.</p>
+  <h2>What gets stored</h2>
+  <p>When you name a fruit, the site adds one to that fruit's counter, both all-time and for the current day (UTC). The counters are all that's kept: not who you are, not your IP address. Answers that aren't a known fruit aren't stored at all.</p>
+  <h2>Spam protection</h2>
+  <p>To stop spam, the server briefly keeps your IP address in memory to count how often you submit answers. It is never written to the database.</p>
+  <h2>Analytics</h2>
+  <p>Page views are counted with Cloudflare Web Analytics, which doesn't use cookies and doesn't track you across sites.</p>
+  <h2>Hosting</h2>
+  <p>The site runs on Cloudflare, which processes requests to deliver pages and block abuse. See <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare's privacy policy</a>.</p>
+  <h2>Sharing</h2>
+  <p>The Share button copies your result to the clipboard or opens your device's share sheet. Nothing is sent to the site.</p>
+  <h2>Questions</h2>
+  <p><a href="/contact/">Get in touch</a>.</p>
 </main>
 <footer>© 2026 · <a href="/privacy/">Privacy</a> · <a href="/contact/">Contact</a></footer>
 <!-- Cloudflare Web Analytics: replace PASTE_YOUR_TOKEN_HERE with your token -->
