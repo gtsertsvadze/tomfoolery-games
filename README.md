@@ -33,7 +33,8 @@ Then replace `PASTE_YOUR_TOKEN_HERE` in `public/index.html` and
 ## Regenerate images (OG card, favicon.ico)
 
 Needs Chrome installed. Icons and favicons in `public/icons/` and
-`public/favicon*` come from the design handoff (metadata stripped).
+`public/favicon*` come from the design handoff (metadata stripped). DM Sans is
+self-hosted in `public/fonts/` (no fonts.googleapis.com/gstatic.com requests).
 
 ```bash
 node tools/images.mjs

@@ -41,9 +41,10 @@ const games = [{ slug: "fruit", icon: "name-a-fruit", title: "Name a fruit", gro
 mkdirSync(join(PUB, "og"), { recursive: true });
 for (const g of games) {
   const svg = readFileSync(join(PUB, "icons", g.icon + ".svg"), "utf8");
+  const fontUrl = pathToFileURL(join(PUB, "fonts", "dm-sans.woff2")).href;
   const png = shot("og-" + g.slug, 1200, 630, `<meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=block">
-<style>html,body{margin:0;height:100%;overflow:hidden}
+<style>@font-face{font-family:"DM Sans";src:url(${fontUrl}) format("woff2");font-weight:400 600;font-style:normal}
+html,body{margin:0;height:100%;overflow:hidden}
 body{background:${g.ground};color:#2A211A;font-family:"DM Sans",system-ui,sans-serif;display:flex;align-items:center;padding:0 110px;gap:70px}
 .t{font-size:112px;font-weight:600;letter-spacing:-.035em;line-height:1.02;margin:0}
 .t b{font-weight:inherit;color:#E4572E}.s{font-size:34px;color:#8A7B6E;margin:22px 0 0}</style>
