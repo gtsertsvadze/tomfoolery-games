@@ -46,17 +46,23 @@ async function getTotal(db: D1Database): Promise<number> {
   return row?.total ?? 0;
 }
 
-async function getTop(
+async function getRarest(
   db: D1Database,
   day: string,
-): Promise<{ fruit: string; count: number }[]> {
+  total: number,
+): Promise<{ fruit: string; count: number; rarerThan: number }[]> {
   const res = await db
     .prepare(
-      "SELECT fruit, count FROM fruit_daily WHERE day = ? ORDER BY count DESC, fruit ASC LIMIT 5",
+      "SELECT d.fruit AS fruit, c.count AS count FROM fruit_daily d JOIN fruit_counts c ON c.fruit = d.fruit WHERE d.day = ? ORDER BY c.count ASC, d.fruit ASC LIMIT 5",
     )
     .bind(day)
     .all<{ fruit: string; count: number }>();
-  return res.results ?? [];
+  return (res.results ?? []).map((row) => ({
+    fruit: row.fruit,
+    count: row.count,
+    rarerThan:
+      total > 0 ? Math.round(((total - row.count) / total) * 1000) / 10 : 0,
+  }));
 }
 
 async function handleAnswer(req: Request, env: Env): Promise<Response> {
@@ -113,9 +119,9 @@ async function handleAnswer(req: Request, env: Env): Promise<Response> {
     .first<{ count: number }>();
   const count = countRow?.count ?? 1;
   const total = await getTotal(env.DB);
-  const top = await getTop(env.DB, day);
   const rarerThan =
     total > 0 ? Math.round(((total - count) / total) * 1000) / 10 : 0;
+  const rarest = await getRarest(env.DB, day, total);
 
   return json({
     ok: true,
@@ -123,17 +129,15 @@ async function handleAnswer(req: Request, env: Env): Promise<Response> {
     count,
     total,
     rarerThan,
-    top,
+    rarest,
   });
 }
 
-async function handleTop(_req: Request, env: Env): Promise<Response> {
+async function handleRarest(_req: Request, env: Env): Promise<Response> {
   const day = todayUTC();
-  const [total, top] = await Promise.all([
-    getTotal(env.DB),
-    getTop(env.DB, day),
-  ]);
-  return json({ ok: true, total, top });
+  const total = await getTotal(env.DB);
+  const rarest = await getRarest(env.DB, day, total);
+  return json({ ok: true, total, rarest });
 }
 
 function staticPath(pathname: string): string {
@@ -153,8 +157,8 @@ export default {
     if (req.method === "POST" && url.pathname === "/api/fruit/answer") {
       return handleAnswer(req, env);
     }
-    if (req.method === "GET" && url.pathname === "/api/fruit/top") {
-      return handleTop(req, env);
+    if (req.method === "GET" && url.pathname === "/api/fruit/rarest") {
+      return handleRarest(req, env);
     }
     if (req.method !== "GET" && req.method !== "HEAD") {
       return new Response("Not found", { status: 404 });

@@ -62,6 +62,11 @@
   #share:hover { opacity: .88; }
   #again { align-self: center; padding: 0; background: none; font-size: 13px; color: #8A7B6E;
     text-decoration: underline; text-underline-offset: 3px; }
+  .more { display: flex; justify-content: center; gap: 24px; }
+  .more button { padding: 0; background: none; font-size: 14px; font-weight: 500; color: #2A211A;
+    text-decoration: underline; text-decoration-thickness: 2px; text-decoration-color: #F2C9A8;
+    text-underline-offset: 4px; }
+  .more button:hover { text-decoration-color: #E4572E; }
   .label { margin: 0 0 10px; font-size: 13px; font-weight: 500; color: #8A7B6E; }
   ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 24px 110px 1fr auto;
     gap: 10px 12px; align-items: center; font-size: 16px; }
@@ -119,10 +124,11 @@
     </div>
     <div class="block">
       <button id="share" type="button">Share</button>
+      <div class="more" id="more"><button type="button" id="s-wa">WhatsApp</button><button type="button" id="s-x">X</button><button type="button" id="s-img">Save image</button></div>
       <button id="again" type="button">Play again</button>
     </div>
     <div id="top">
-      <p class="label">Today's top 5</p>
+      <p class="label">Today's rarest</p>
       <ol id="list"></ol>
     </div>
   </section>
@@ -135,14 +141,15 @@ const promptEl = el('prompt'), resultEl = el('result'), pill = el('pill'), fruit
 const verdict = el('verdict'), shareBtn = el('share'), topEl = el('top'), list = el('list');
 const HINT = hint.textContent;
 const TINTS = ['#FFE9A8', '#FFD9C2', '#FFD6DF', '#D3F1D8', '#D5E8FB'];
-let shareText = '';
+let shareText = '', cardFile = null;
 
 // Native share sheets only on phones/tablets; desktop Chrome/Edge open the OS
-// share dialog (which suggests Mail), so desktop copies to the clipboard.
+// share dialog (which suggests Mail), so desktop copies and offers links instead.
 const MOBILE = !!navigator.share && (
   (navigator.userAgentData && navigator.userAgentData.mobile) ||
   /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
   matchMedia('(hover: none) and (pointer: coarse)').matches);
+el('more').hidden = MOBILE;
 
 function show(state) {
   body.dataset.state = state;
@@ -150,21 +157,101 @@ function show(state) {
   resultEl.hidden = state === 'prompt';
 }
 
-function renderTop(top) {
+function renderRarest(rows) {
   list.textContent = '';
-  topEl.hidden = !top.length;
-  const max = top.length ? top[0].count : 1;
-  top.forEach((t, i) => {
+  topEl.hidden = !rows.length;
+  rows.forEach((t, i) => {
     const li = document.createElement('li');
-    li.style.setProperty('--w', (t.count / max * 100) + '%');
+    li.style.setProperty('--w', t.rarerThan + '%');
     li.style.setProperty('--c', TINTS[i % TINTS.length]);
     for (const [tag, cls, text] of [['span', 'rank', i + 1], ['span', 'nm', t.fruit], ['div', 'bar', ''],
-                                    ['span', 'count', t.count.toLocaleString('en-US')]]) {
+                                    ['span', 'count', t.rarerThan + '%']]) {
       const n = document.createElement(tag);
       n.className = cls; n.textContent = text; li.appendChild(n);
     }
     list.appendChild(li);
   });
+}
+
+// "medlar" -> "M _ _ _ _ _"; the answer stays secret, like a Wordle grid.
+const mask = (s) => [...s].map((c, i) => i === 0 ? c.toUpperCase() : /\p{L}/u.test(c) ? '_' : c).join(' ');
+const filled = (r) => Math.min(10, Math.max(1, Math.round(r / 10)));
+const squares = (r, rare) => (rare ? '\u{1F7E9}' : '\u{1F7E7}').repeat(filled(r)) + '\u{2B1C}'.repeat(10 - filled(r));
+
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+  else { ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  ctx.fill();
+}
+
+async function makeCard(fruit, rarerThan, rare, pillText) {
+  const F = '"DM Sans", system-ui, sans-serif';
+  await Promise.all(['600 88px', '500 48px', '400 48px'].map((f) => document.fonts.load(f + ' "DM Sans"')));
+  const img = new Image();
+  img.src = '/icons/name-a-fruit.svg';
+  await img.decode();
+  const strong = rare ? '#2F9A55' : '#E4572E', soft = rare ? '#D3F1D8' : '#FFE9A8';
+  const c = document.createElement('canvas');
+  c.width = 1080; c.height = 1920;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = rare ? '#EAF7EC' : '#FFEBDD';
+  ctx.fillRect(0, 0, 1080, 1920);
+
+  // Wordmark with the tilted accent "o".
+  let x = 96;
+  ctx.font = '600 56px ' + F; ctx.fillStyle = '#2A211A';
+  ctx.fillText('tomf', x, 290); x += ctx.measureText('tomf').width;
+  const ow = ctx.measureText('o').width;
+  ctx.save(); ctx.translate(x + ow / 2, 290 - 20 - 3); ctx.rotate(-14 * Math.PI / 180);
+  ctx.fillStyle = '#E4572E'; ctx.fillText('o', -ow / 2, 20); ctx.restore();
+  x += ow; ctx.fillText('olery', x, 290);
+
+  ctx.drawImage(img, 96, 380, 180, 180);
+
+  // Pill.
+  ctx.font = '600 40px ' + F;
+  const pw = ctx.measureText(pillText).width + 56;
+  ctx.fillStyle = soft; rrect(ctx, 96, 640, pw, 76, 20);
+  ctx.fillStyle = rare ? '#1F6B38' : '#7A5A00'; ctx.textBaseline = 'middle';
+  ctx.fillText(pillText, 96 + 28, 640 + 38); ctx.textBaseline = 'alphabetic';
+
+  // Letter tiles: first letter shown, the rest blank.
+  const chars = [...fruit], tiles = chars.filter((ch) => ch !== ' ').length, spaces = chars.length - tiles;
+  const s = Math.min(150, Math.floor((888 - (tiles - 1) * 16) / (tiles + spaces * 0.5)));
+  let tx = 96; const ty = 790;
+  chars.forEach((ch, i) => {
+    if (ch === ' ') { tx += s / 2; return; }
+    ctx.fillStyle = i === 0 ? strong : soft; rrect(ctx, tx, ty, s, s, Math.round(s * 0.14));
+    if (i === 0) {
+      ctx.fillStyle = '#FFF8EE'; ctx.font = '600 ' + Math.round(s * 0.55) + 'px ' + F;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(ch.toUpperCase(), tx + s / 2, ty + s / 2 + s * 0.03);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    }
+    tx += s + 16;
+  });
+
+  // Rarity squares.
+  const sy = ty + s + 64;
+  for (let i = 0; i < 10; i++) {
+    ctx.fillStyle = i < filled(rarerThan) ? strong : 'rgba(42,33,26,0.08)';
+    rrect(ctx, 96 + i * 88, sy, 72, 72, 12);
+  }
+
+  const by = sy + 72 + 130;
+  ctx.fillStyle = '#2A211A'; ctx.font = '600 88px ' + F;
+  ctx.fillText('Rarer than ' + rarerThan + '%', 96, by);
+  ctx.fillStyle = '#8A7B6E'; ctx.font = '400 48px ' + F;
+  ctx.fillText('of players.', 96, by + 70);
+  ctx.fillStyle = '#2A211A'; ctx.font = '500 48px ' + F;
+  ctx.fillText('Can you name a rarer fruit?', 96, 1470);
+  ctx.font = '600 44px ' + F;
+  ctx.fillText('tomfoolery.games/fruit', 96, 1550);
+
+  const blob = await new Promise((res, rej) => c.toBlob((b) => b ? res(b) : rej(new Error('toBlob')), 'image/png'));
+  return new File([blob], 'tomfoolery-fruit.png', { type: 'image/png' });
 }
 
 form.addEventListener('submit', async (e) => {
@@ -188,22 +275,20 @@ form.addEventListener('submit', async (e) => {
     const pct = d.count / d.total * 100;
     const isRare = pct < 1;
     fruitEl.textContent = d.fruit[0].toUpperCase() + d.fruit.slice(1);
-    let line;
     if (isRare) {
       const top = Math.max(0.1, Math.round(pct * 10) / 10);
-      const rarer = Math.min(99.9, Math.round((100 - pct) * 10) / 10);
       pill.textContent = 'Top ' + top + '%';
-      line = 'Rarer than ' + rarer + '% of players.';
-      verdict.textContent = line + ' Show-off.';
+      verdict.textContent = 'Rarer than ' + d.rarerThan + '% of players. Show-off.';
     } else {
-      const p = Math.round(pct);
       pill.textContent = 'Crowd favourite';
-      line = 'You and ' + p + '% of humanity said ' + d.fruit + '.';
-      verdict.textContent = line;
+      verdict.textContent = 'You and ' + Math.round(pct) + '% of humanity said ' + d.fruit + '.';
     }
-    shareText = '\u{1F34E} Name a Fruit: I said ' + d.fruit + '. ' + line + ' tomfoolery.games/fruit';
+    shareText = ['\u{1F34E} Name a Fruit', mask(d.fruit), squares(d.rarerThan, isRare),
+      'Rarer than ' + d.rarerThan + '% of players. Can you beat it?', 'https://tomfoolery.games/fruit'].join('\n');
     shareBtn.textContent = 'Share';
-    renderTop(d.top || []);
+    cardFile = null;
+    makeCard(d.fruit, d.rarerThan, isRare, pill.textContent).then((f) => { cardFile = f; }).catch(() => {});
+    renderRarest(d.rarest || []);
     show(isRare ? 'rare' : 'common');
     window.scrollTo(0, 0);
   } catch {
@@ -219,11 +304,7 @@ el('again').addEventListener('click', () => {
   input.focus();
 });
 
-shareBtn.addEventListener('click', async () => {
-  if (MOBILE) {
-    try { await navigator.share({ text: shareText }); return; }
-    catch (e) { if (e.name === 'AbortError') return; }
-  }
+async function copyText() {
   try {
     await navigator.clipboard.writeText(shareText);
     shareBtn.textContent = 'Copied!';
@@ -231,6 +312,26 @@ shareBtn.addEventListener('click', async () => {
   } catch {
     prompt('Copy your result:', shareText);
   }
+}
+
+shareBtn.addEventListener('click', () => {
+  if (!MOBILE) return copyText();
+  // No await before share(): Safari only allows it inside the tap itself.
+  const data = cardFile && navigator.canShare && navigator.canShare({ files: [cardFile] })
+    ? { files: [cardFile], text: shareText } : { text: shareText };
+  navigator.share(data).catch((e) => { if (e.name !== 'AbortError') copyText(); });
+});
+
+const openShare = (url) => window.open(url + encodeURIComponent(shareText), '_blank', 'noopener');
+el('s-wa').addEventListener('click', () => openShare('https://wa.me/?text='));
+el('s-x').addEventListener('click', () => openShare('https://x.com/intent/post?text='));
+el('s-img').addEventListener('click', () => {
+  if (!cardFile) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(cardFile);
+  a.download = 'tomfoolery-fruit.png';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 });
 </script>
 <!-- Cloudflare Web Analytics: replace PASTE_YOUR_TOKEN_HERE with your token -->
