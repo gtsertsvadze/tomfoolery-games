@@ -1,4 +1,5 @@
 import { matchFruit } from "./fruits";
+import { rarerThanPct, sharePct } from "./stats";
 
 interface Env {
   DB: D1Database;
@@ -46,22 +47,34 @@ async function getTotal(db: D1Database): Promise<number> {
   return row?.total ?? 0;
 }
 
+async function getDailyTotal(db: D1Database, day: string): Promise<number> {
+  const row = await db
+    .prepare(
+      "SELECT COALESCE(SUM(count), 0) AS total FROM fruit_daily WHERE day = ?",
+    )
+    .bind(day)
+    .first<{ total: number }>();
+  return row?.total ?? 0;
+}
+
 async function getRarest(
   db: D1Database,
   day: string,
-  total: number,
-): Promise<{ fruit: string; count: number; rarerThan: number }[]> {
+): Promise<
+  { fruit: string; count: number; pct: number; rarerThan: number }[]
+> {
+  const dailyTotal = await getDailyTotal(db, day);
   const res = await db
     .prepare(
-      "SELECT d.fruit AS fruit, c.count AS count FROM fruit_daily d JOIN fruit_counts c ON c.fruit = d.fruit WHERE d.day = ? ORDER BY c.count ASC, d.fruit ASC LIMIT 5",
+      "SELECT fruit, count FROM fruit_daily WHERE day = ? ORDER BY count ASC, fruit ASC LIMIT 5",
     )
     .bind(day)
     .all<{ fruit: string; count: number }>();
   return (res.results ?? []).map((row) => ({
     fruit: row.fruit,
     count: row.count,
-    rarerThan:
-      total > 0 ? Math.round(((total - row.count) / total) * 1000) / 10 : 0,
+    pct: sharePct(row.count, dailyTotal),
+    rarerThan: rarerThanPct(row.count, dailyTotal),
   }));
 }
 
@@ -119,9 +132,8 @@ async function handleAnswer(req: Request, env: Env): Promise<Response> {
     .first<{ count: number }>();
   const count = countRow?.count ?? 1;
   const total = await getTotal(env.DB);
-  const rarerThan =
-    total > 0 ? Math.round(((total - count) / total) * 1000) / 10 : 0;
-  const rarest = await getRarest(env.DB, day, total);
+  const rarerThan = rarerThanPct(count, total);
+  const rarest = await getRarest(env.DB, day);
 
   return json({
     ok: true,
@@ -135,8 +147,8 @@ async function handleAnswer(req: Request, env: Env): Promise<Response> {
 
 async function handleRarest(_req: Request, env: Env): Promise<Response> {
   const day = todayUTC();
-  const total = await getTotal(env.DB);
-  const rarest = await getRarest(env.DB, day, total);
+  const total = await getDailyTotal(env.DB, day);
+  const rarest = await getRarest(env.DB, day);
   return json({ ok: true, total, rarest });
 }
 

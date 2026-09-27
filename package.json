@@ -9,7 +9,7 @@
     "db:migrate": "wrangler d1 migrations apply DB --remote",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "typecheck": "tsc --noEmit",
-    "test": "node --test test/fruits.test.mjs"
+    "test": "node --test test/fruits.test.mjs test/stats.test.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5",
