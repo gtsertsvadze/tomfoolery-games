@@ -3,49 +3,63 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>tomfoolery.games</title>
+<title>Tomfoolery</title>
 <meta name="description" content="Tiny web games. Name a fruit. Any fruit except apple.">
-<meta property="og:title" content="tomfoolery.games">
+<meta name="theme-color" content="#FBF6EC">
+<meta property="og:title" content="Tomfoolery">
 <meta property="og:description" content="Tiny web games. Name a fruit. Any fruit except apple.">
-<link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap">
 <style>
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
-    background: #fff; color: #111;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  main { width: 100%; max-width: 680px; margin: 0 auto; padding: 14vh 20px 40px; }
-  h1 { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0;
-    font-size: clamp(30px, 7vw, 44px); font-weight: 800; letter-spacing: -.04em; }
-  h1 svg { width: .95em; height: .95em; flex: none; }
-  h1 span { color: #999; font-weight: 500; }
-  .tag { margin: 8px 0 44px; text-align: center; color: #777; font-size: 16px; }
-  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
-  .tile { width: 150px; display: flex; flex-direction: column; align-items: center; gap: 12px;
-    padding: 30px 12px 24px; border: 1px solid #e6e6e6; border-radius: 18px;
-    background: #fff; color: inherit; text-decoration: none;
-    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
-  .tile:hover, .tile:focus-visible { transform: translateY(-3px); border-color: #ccc;
-    box-shadow: 0 14px 30px -14px rgba(0,0,0,.3); }
-  .tile:focus-visible { outline: 2px solid #111; outline-offset: 2px; }
-  .emoji { font-size: 54px; line-height: 1; transition: transform .2s ease; }
-  .tile:hover .emoji { transform: scale(1.12) rotate(-8deg); }
-  .name { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
-  footer { margin-top: auto; padding: 24px 20px; text-align: center; font-size: 12px; color: #aaa; }
-  @media (prefers-reduced-motion: reduce) { .tile, .emoji { transition: none; } }
+    background: #FBF6EC; color: #2A211A; font-family: "DM Sans", system-ui, sans-serif; }
+  header { padding: 28px 40px; }
+  .wm { font-size: 20px; font-weight: 600; letter-spacing: -.03em; color: inherit; text-decoration: none; }
+  .wm b { display: inline-block; font-weight: inherit; color: #E4572E; transform: rotate(-14deg) translateY(-1px); }
+  main { padding: 16px 40px 32px; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px;
+    grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .tile { display: flex; flex-direction: column; justify-content: space-between; height: 236px;
+    padding: 20px 22px; border-radius: 8px; background: var(--tint); color: inherit; text-decoration: none;
+    transition: transform .15s ease; }
+  .tile[href]:hover { transform: translateY(-2px); }
+  .tile img { display: block; width: 150px; height: 150px; margin: -8px auto 0; }
+  .tile span { font-size: 18px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; white-space: nowrap; }
+  footer { margin-top: auto; padding: 24px; text-align: center; font-size: 12px; color: #8A7B6E; }
+  @media (max-width: 1023px) { ul { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 639px) {
+    body { padding: 0 20px; }
+    header { padding: 24px 0; }
+    main { padding: 32px 0; }
+    ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .tile { height: auto; aspect-ratio: 1; padding: 0; justify-content: center; align-items: center; gap: 12px; }
+    .tile img { width: 68px; height: 68px; margin: 0; }
+    .tile span { font-size: 13px; font-weight: 500; letter-spacing: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
 </style>
 </head>
 <body>
+<header><a class="wm" href="/">Tomf<b>o</b>olery</a></header>
 <main>
-  <h1><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#111"/><g fill="#fff"><path d="M15 46 C9 40 2 32 7 19 C17 22 25 34 30 46 Z"/><path d="M49 46 C55 40 62 32 57 19 C47 22 39 34 34 46 Z"/><path d="M21 46 C22 30 26 16 32 5 C38 16 42 30 43 46 Z"/><rect x="12" y="44" width="40" height="9" rx="4.5"/></g><g fill="#f8c630"><circle cx="7" cy="19" r="5.5"/><circle cx="32" cy="6" r="5.5"/><circle cx="57" cy="19" r="5.5"/></g></svg>tomfoolery<span>.games</span></h1>
-  <p class="tag">tiny games, no point.</p>
   <ul>
-    <li><a class="tile" href="/fruit/"><span class="emoji" aria-hidden="true">🍎</span><span class="name">Name a Fruit</span></a></li>
+    <li><a class="tile" href="/fruit/" style="--tint:#FFE9A8"><img src="/icons/name-a-fruit.svg" alt="" width="150" height="150"><span>Name a Fruit</span></a></li>
+    <li><a class="tile" style="--tint:#FFD9C2" aria-disabled="true"><img src="/icons/unpopular-opinion.svg" alt="" width="150" height="150"><span>Unpopular Opinion</span></a></li>
+    <li><a class="tile" style="--tint:#D3F1D8" aria-disabled="true"><img src="/icons/brain-age.svg" alt="" width="150" height="150"><span>Brain Age</span></a></li>
+    <li><a class="tile" style="--tint:#D5E8FB" aria-disabled="true"><img src="/icons/the-button.svg" alt="" width="150" height="150"><span>The Button</span></a></li>
+    <li><a class="tile" style="--tint:#FFD6DF" aria-disabled="true"><img src="/icons/right-now.svg" alt="" width="150" height="150"><span>Right Now</span></a></li>
+    <li><a class="tile" style="--tint:#E6DCFA" aria-disabled="true"><img src="/icons/are-you-predictable.svg" alt="" width="150" height="150"><span>Are You Predictable</span></a></li>
   </ul>
 </main>
-<footer>© 2026 tomfoolery.games</footer>
+<footer>© 2026</footer>
 <!-- Cloudflare Web Analytics: replace PASTE_YOUR_TOKEN_HERE with your token -->
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "PASTE_YOUR_TOKEN_HERE"}'></script>
 </body>

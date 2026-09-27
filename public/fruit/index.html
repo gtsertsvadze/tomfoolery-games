@@ -3,180 +3,174 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Name a Fruit — tomfoolery.games</title>
+<title>Name a Fruit — Tomfoolery</title>
 <meta name="description" content="Name a fruit. Any fruit except apple. How rare is your answer?">
+<meta name="theme-color" content="#FDF5E4">
 <meta property="og:title" content="Name a Fruit">
 <meta property="og:description" content="Name a fruit. Any fruit except apple. How rare is your answer?">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tomfoolery.games/fruit/">
 <meta property="og:image" content="https://tomfoolery.games/og/fruit.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap">
 <style>
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
-    background: #fff; color: #111;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  main { width: 100%; max-width: 480px; margin: 0 auto; padding: 24px 20px 40px; text-align: center; }
-  .back { display: inline-block; margin-bottom: 9vh; color: #999; font-size: 14px; text-decoration: none; }
-  .back:hover { color: #111; }
-  .emoji { font-size: 64px; line-height: 1; margin: 0 0 12px; }
-  h1 { margin: 0; font-size: clamp(30px, 8vw, 40px); font-weight: 800; letter-spacing: -.03em; }
-  .sub { margin: 6px 0 28px; color: #777; font-size: 18px; }
-  form { display: flex; gap: 8px; }
-  input { flex: 1; min-width: 0; font: inherit; font-size: 18px; padding: 12px 16px; color: inherit;
-    background: #fff; border: 1.5px solid #ddd; border-radius: 14px; outline: none;
-    transition: border-color .15s; }
-  input:focus { border-color: #111; }
-  input::placeholder { color: #bbb; }
-  button { font: inherit; font-size: 16px; font-weight: 600; padding: 12px 20px; cursor: pointer;
-    background: #111; color: #fff; border: 0; border-radius: 14px; transition: transform .1s, opacity .15s; }
-  button:hover { transform: translateY(-1px); }
-  button:active { transform: translateY(0); }
-  button:disabled { opacity: .5; cursor: default; transform: none; }
-  button:focus-visible, .back:focus-visible { outline: 2px solid #111; outline-offset: 2px; }
-  #msg { min-height: 22px; margin: 10px 0 0; font-size: 15px; color: #c0392b; }
-  .shake { animation: shake .3s; }
-  @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-  #result { margin-top: 24px; padding: 26px 20px 22px; border: 1.5px solid #111; border-radius: 20px;
-    animation: pop .25s ease-out; }
-  @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.98); } }
-  #r-fruit { margin: 0; font-size: 40px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1;
-    overflow-wrap: anywhere; }
-  #r-verdict { margin: 10px 0 0; font-size: 17px; }
-  #r-stat { display: inline-block; margin: 14px 0 18px; padding: 6px 14px; border-radius: 999px;
-    background: #f2f2f2; font-size: 14px; font-weight: 600; }
-  #share { display: block; width: 100%; padding: 13px; }
-  #fallback { display: block; margin-top: 12px; padding: 10px 12px; border: 1px dashed #ccc;
-    border-radius: 10px; font-size: 14px; text-align: left; user-select: all; }
+    background: #FDF5E4; color: #2A211A; font-family: "DM Sans", system-ui, sans-serif;
+    transition: background-color .2s; }
+  body[data-state="rare"] { background: #EAF7EC; }
+  body[data-state="common"] { background: #FFEBDD; }
+  header { padding: 28px 40px; }
+  .wm { font-size: 20px; font-weight: 600; letter-spacing: -.03em; color: inherit; text-decoration: none; }
+  .wm b { display: inline-block; font-weight: inherit; color: #E4572E; transform: rotate(-14deg) translateY(-1px); }
+  main { width: 100%; max-width: 800px; margin: 0 auto; padding: 48px 40px 40px; }
+  section { display: flex; flex-direction: column; gap: 36px; }
+  .block { display: flex; flex-direction: column; gap: 14px; }
+  .icon { display: block; width: 120px; height: 120px; margin-left: -6px; }
+  h1 { margin: 0; font-size: 80px; font-weight: 600; letter-spacing: -.035em; line-height: 1.02; }
+  h1 b { font-weight: inherit; color: #E4572E; }
+  .sub { margin: 0; font-size: 24px; color: #8A7B6E; }
+  .sub s { text-decoration: line-through; text-decoration-color: #E4572E; text-decoration-thickness: 2px; }
+  form { display: flex; align-items: flex-end; gap: 20px; }
+  input { flex: 1; min-width: 0; font: inherit; font-size: 32px; letter-spacing: -.02em; padding: 8px 0 12px;
+    color: inherit; background: transparent; border: 0; border-bottom: 2px solid #F2C9A8; border-radius: 0;
+    outline: none; transition: border-color .15s; }
+  input:focus { border-color: #E4572E; }
+  input::placeholder { color: #8A7B6E; }
+  button { font: inherit; cursor: pointer; border: 0; }
+  #go { font-size: 16px; font-weight: 600; padding: 14px 28px; background: #E4572E; color: #FFF8EE;
+    border-radius: 8px; transition: background-color .15s; }
+  #go:hover { background: #C9481F; }
+  #go:disabled { opacity: .6; cursor: default; }
+  .hint { margin: 0; font-size: 13px; color: #8A7B6E; }
+  .pill { align-self: flex-start; padding: 6px 10px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    background: #D3F1D8; color: #1F6B38; }
+  body[data-state="common"] .pill { background: #FFE9A8; color: #7A5A00; }
+  .fruit { margin: 0; font-size: 144px; font-weight: 600; letter-spacing: -.045em; line-height: .95;
+    color: #2F9A55; overflow-wrap: anywhere; }
+  body[data-state="common"] .fruit { color: #E4572E; }
+  .verdict { margin: 0; font-size: 24px; }
+  #share { width: 100%; padding: 16px; font-size: 16px; font-weight: 600; background: #2A211A; color: #FFF8EE;
+    border-radius: 8px; transition: opacity .15s; }
+  #share:hover { opacity: .88; }
+  #again { align-self: center; padding: 0; background: none; font-size: 13px; color: #8A7B6E;
+    text-decoration: underline; text-underline-offset: 3px; }
+  .label { margin: 0 0 10px; font-size: 13px; font-weight: 500; color: #8A7B6E; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 24px 110px 1fr auto;
+    gap: 10px 12px; align-items: center; font-size: 16px; }
+  li { display: contents; }
+  .rank, .count { color: #8A7B6E; font-variant-numeric: tabular-nums; }
+  .count { text-align: right; }
+  .nm { font-weight: 500; text-transform: capitalize; }
+  .bar { height: 12px; border-radius: 6px; width: var(--w); background: var(--c); }
+  footer { margin-top: auto; padding: 24px; text-align: center; font-size: 12px; color: #8A7B6E; }
+  :focus-visible { outline: 2px solid #E4572E; outline-offset: 3px; }
+  input:focus-visible { outline: none; }
   [hidden] { display: none !important; }
-  #top { margin-top: 36px; }
-  h2 { margin: 0 0 12px; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #999; }
-  ol { list-style: none; margin: 0; padding: 0; }
-  li { display: flex; align-items: baseline; gap: 12px; padding: 7px 12px; border-radius: 10px; font-size: 16px;
-    background: linear-gradient(90deg, #f3f3f3 var(--w), transparent 0); }
-  li + li { margin-top: 4px; }
-  .rank { width: 1em; color: #aaa; font-size: 13px; font-variant-numeric: tabular-nums; }
-  .f { flex: 1; text-align: left; text-transform: capitalize; }
-  .n { color: #777; font-size: 14px; font-variant-numeric: tabular-nums; }
-  #total { margin: 12px 0 0; font-size: 13px; color: #999; }
-  .argue { margin: 36px 0 0; font-size: 13px; color: #999; line-height: 1.5; }
-  footer { margin-top: auto; padding: 24px 20px; text-align: center; font-size: 12px; color: #aaa; }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  @media (max-width: 639px) {
+    body { padding: 0 20px; }
+    header { padding: 24px 0; }
+    main { padding: 40px 0; }
+    section { gap: 28px; }
+    .block { gap: 12px; }
+    .icon { width: 88px; height: 88px; }
+    h1 { font-size: 44px; }
+    .sub, .verdict { font-size: 18px; }
+    form { flex-direction: column; align-items: stretch; }
+    input { font-size: 24px; }
+    #go { min-height: 48px; }
+    .fruit { font-size: 76px; }
+  }
+  @media (prefers-reduced-motion: reduce) { body, input, #go, #share { transition: none; } }
 </style>
 </head>
-<body>
+<body data-state="prompt">
+<header><a class="wm" href="/">Tomf<b>o</b>olery</a></header>
 <main>
-  <a class="back" href="/">← tomfoolery.games</a>
-  <p class="emoji" aria-hidden="true">🍎</p>
-  <h1>Name a fruit.</h1>
-  <p class="sub">Any fruit except apple.</p>
-  <form id="form" autocomplete="off">
-    <input id="input" type="text" maxlength="40" placeholder="e.g. medlar" aria-label="Name a fruit"
-      autofocus autocapitalize="off" spellcheck="false" enterkeyhint="go">
-    <button type="submit" id="go">Go</button>
-  </form>
-  <p id="msg" role="status" aria-live="polite"></p>
+  <section id="prompt">
+    <img class="icon" src="/icons/name-a-fruit.svg" alt="" width="120" height="120">
+    <div class="block">
+      <h1>Name a fruit<b>.</b></h1>
+      <p class="sub">Any fruit except <s>apple</s>.</p>
+    </div>
+    <div class="block">
+      <form id="form" autocomplete="off">
+        <input id="input" type="text" maxlength="40" placeholder="type here" aria-label="Name a fruit"
+          autofocus autocapitalize="off" spellcheck="false" enterkeyhint="go">
+        <button type="submit" id="go">Go</button>
+      </form>
+      <p class="hint" id="hint" role="status" aria-live="polite">Botanical fruits count. Yes, tomato.</p>
+    </div>
+  </section>
   <section id="result" hidden aria-live="polite">
-    <p id="r-fruit"></p>
-    <p id="r-verdict"></p>
-    <p id="r-stat"></p>
-    <button id="share" type="button">Share</button>
-    <output id="fallback" hidden></output>
+    <div class="block">
+      <span class="pill" id="pill"></span>
+      <p class="fruit" id="fruit"></p>
+      <p class="verdict" id="verdict"></p>
+    </div>
+    <div class="block">
+      <button id="share" type="button">Share</button>
+      <button id="again" type="button">Play again</button>
+    </div>
+    <div id="top">
+      <p class="label">Today's top 5</p>
+      <ol id="list"></ol>
+    </div>
   </section>
-  <section id="top" hidden>
-    <h2>Today's top 5</h2>
-    <ol id="top-list"></ol>
-    <p id="total"></p>
-  </section>
-  <p class="argue">Arguing with the rules? Botanical fruits count. Yes, tomato is a fruit. Apple is still banned.</p>
 </main>
-<footer>© 2026 tomfoolery.games</footer>
+<footer>© 2026</footer>
 <script>
 const el = (id) => document.getElementById(id);
-const form = el('form'), input = el('input'), goBtn = el('go'), msg = el('msg');
-const result = el('result'), rFruit = el('r-fruit'), rVerdict = el('r-verdict'), rStat = el('r-stat');
-const shareBtn = el('share'), fallback = el('fallback');
-const topEl = el('top'), topList = el('top-list'), totalEl = el('total');
-
-const MOCKING = [
-  '{F}. Groundbreaking. The fruit equivalent of answering "blue".',
-  '{F}. Wow. Did you also name your dog "Dog"?',
-  '{F}. A bold choice, if this were 1994.',
-  '{F} again. The hive mind thanks you for your service.',
-  '{F}. Your imagination has been notified.'
-];
-const MID = [
-  '{F}. Not bad. Not medlar, but not bad.',
-  '{F}. Respectable. Deeply mid. Respectable.',
-  '{F}. Solid. Nobody will remember it, but solid.'
-];
-const BRAG = [
-  '{F}?? Okay, show-off. Framed and mounted.',
-  '{F}. Absolutely nobody else would have said that. Respect.',
-  '{F}. The connoisseur’s choice. Or a misclick. Either way: legend.',
-  '{F}. You’ve clearly been waiting your whole life for this question.'
-];
-
-function pick(arr, seed) {
-  let h = 0;
-  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return arr[h % arr.length];
-}
-const people = (n) => n === 1 ? '1 person' : n + ' people';
-const cap = (s) => s[0].toUpperCase() + s.slice(1);
-
+const body = document.body, form = el('form'), input = el('input'), goBtn = el('go'), hint = el('hint');
+const promptEl = el('prompt'), resultEl = el('result'), pill = el('pill'), fruitEl = el('fruit');
+const verdict = el('verdict'), shareBtn = el('share'), topEl = el('top'), list = el('list');
+const HINT = hint.textContent;
+const TINTS = ['#FFE9A8', '#FFD9C2', '#FFD6DF', '#D3F1D8', '#D5E8FB'];
 let shareText = '';
 
-// Native share sheets only make sense on phones/tablets. On desktop, Chrome and
-// Edge open the OS share dialog (which tends to suggest Mail), so we copy instead.
+// Native share sheets only on phones/tablets; desktop Chrome/Edge open the OS
+// share dialog (which suggests Mail), so desktop copies to the clipboard.
 const MOBILE = !!navigator.share && (
   (navigator.userAgentData && navigator.userAgentData.mobile) ||
   /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
   matchMedia('(hover: none) and (pointer: coarse)').matches);
 
-function renderTop(top, total) {
+function show(state) {
+  body.dataset.state = state;
+  promptEl.hidden = state !== 'prompt';
+  resultEl.hidden = state === 'prompt';
+}
+
+function renderTop(top) {
+  list.textContent = '';
   topEl.hidden = !top.length;
-  if (!top.length) return;
-  topList.textContent = '';
-  const max = top[0].count || 1;
+  const max = top.length ? top[0].count : 1;
   top.forEach((t, i) => {
     const li = document.createElement('li');
-    li.style.setProperty('--w', Math.round(t.count / max * 100) + '%');
-    for (const [cls, text] of [['rank', i + 1], ['f', t.fruit], ['n', t.count]]) {
-      const s = document.createElement('span');
-      s.className = cls; s.textContent = text; li.appendChild(s);
+    li.style.setProperty('--w', (t.count / max * 100) + '%');
+    li.style.setProperty('--c', TINTS[i % TINTS.length]);
+    for (const [tag, cls, text] of [['span', 'rank', i + 1], ['span', 'nm', t.fruit], ['div', 'bar', ''],
+                                    ['span', 'count', t.count.toLocaleString('en-US')]]) {
+      const n = document.createElement(tag);
+      n.className = cls; n.textContent = text; li.appendChild(n);
     }
-    topList.appendChild(li);
+    list.appendChild(li);
   });
-  totalEl.textContent = people(total) + ' have answered so far.';
-}
-
-async function loadTop() {
-  try {
-    const r = await fetch('/api/fruit/top');
-    if (!r.ok) return;
-    const d = await r.json();
-    renderTop(d.top || [], d.total || 0);
-  } catch { /* offline: stay quiet */ }
-}
-
-function fail(text) {
-  msg.textContent = text;
-  input.classList.remove('shake');
-  void input.offsetWidth;
-  input.classList.add('shake');
-  input.select();
 }
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  msg.textContent = '';
-  const answer = input.value.trim();
+  const answer = input.value.trim().toLowerCase();
   if (!answer) return;
+  hint.textContent = HINT;
   goBtn.disabled = true;
   try {
     const r = await fetch('/api/fruit/answer', {
@@ -185,29 +179,43 @@ form.addEventListener('submit', async (e) => {
       body: JSON.stringify({ answer })
     });
     const d = await r.json();
-    if (!d.ok) return fail(d.error || 'Hmm. Try again.');
-    const F = cap(d.fruit);
-    rFruit.textContent = F;
-    const pool = d.rarerThan >= 90 ? BRAG : d.rarerThan >= 50 ? MID : MOCKING;
-    rVerdict.textContent = pick(pool, d.fruit + d.count).replaceAll('{F}', F);
-    let stat;
-    if (d.total < 300) {
-      rStat.textContent = people(d.count) + ' said ' + d.fruit + '.';
-      stat = d.count === 1 ? 'Nobody else has.' : people(d.count) + ' said that.';
-    } else {
-      rStat.textContent = 'Rarer than ' + d.rarerThan + '% of players';
-      stat = 'Rarer than ' + d.rarerThan + '% of players.';
+    if (!d.ok) {
+      if (d.code !== 'apple') hint.textContent = d.error || 'Try again.';
+      input.select();
+      return;
     }
-    shareText = '\u{1F34E} Name a Fruit: I said ' + d.fruit + '. ' + stat + ' tomfoolery.games/fruit';
+    const pct = d.count / d.total * 100;
+    const isRare = pct < 1;
+    fruitEl.textContent = d.fruit[0].toUpperCase() + d.fruit.slice(1);
+    let line;
+    if (isRare) {
+      const top = Math.max(0.1, Math.round(pct * 10) / 10);
+      const rarer = Math.min(99.9, Math.round((100 - pct) * 10) / 10);
+      pill.textContent = 'Top ' + top + '%';
+      line = 'Rarer than ' + rarer + '% of players.';
+      verdict.textContent = line + ' Show-off.';
+    } else {
+      const p = Math.round(pct);
+      pill.textContent = 'Crowd favourite';
+      line = 'You and ' + p + '% of humanity said ' + d.fruit + '.';
+      verdict.textContent = line;
+    }
+    shareText = '\u{1F34E} Name a Fruit: I said ' + d.fruit + '. ' + line + ' tomfoolery.games/fruit';
     shareBtn.textContent = 'Share';
-    fallback.hidden = true;
-    result.hidden = false;
-    renderTop(d.top || [], d.total || 0);
+    renderTop(d.top || []);
+    show(isRare ? 'rare' : 'common');
+    window.scrollTo(0, 0);
   } catch {
-    fail('Network hiccup. Try again.');
+    hint.textContent = 'Network hiccup. Try again.';
   } finally {
     goBtn.disabled = false;
   }
+});
+
+el('again').addEventListener('click', () => {
+  show('prompt');
+  input.value = '';
+  input.focus();
 });
 
 shareBtn.addEventListener('click', async () => {
@@ -220,12 +228,9 @@ shareBtn.addEventListener('click', async () => {
     shareBtn.textContent = 'Copied!';
     setTimeout(() => { shareBtn.textContent = 'Share'; }, 1500);
   } catch {
-    fallback.textContent = shareText;
-    fallback.hidden = false;
+    prompt('Copy your result:', shareText);
   }
 });
-
-loadTop();
 </script>
 <!-- Cloudflare Web Analytics: replace PASTE_YOUR_TOKEN_HERE with your token -->
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "PASTE_YOUR_TOKEN_HERE"}'></script>

@@ -30,9 +30,10 @@ npx wrangler domains add www.tomfoolery.games
 Then replace `PASTE_YOUR_TOKEN_HERE` in `public/index.html` and
 `public/fruit/index.html` with your Cloudflare Web Analytics token.
 
-## Regenerate images (OG card, favicon.ico, apple-touch-icon)
+## Regenerate images (OG card, favicon.ico)
 
-Needs Chrome installed. `public/favicon.svg` is the hand-drawn icon source.
+Needs Chrome installed. Icons and favicons in `public/icons/` and
+`public/favicon*` come from the design handoff (metadata stripped).
 
 ```bash
 node tools/images.mjs
